@@ -150,7 +150,7 @@ def match(team1_id,team2_id):
 
 
 def penalty(gk, shooter):
-    time.sleep(5)
+    time.sleep(3)
     # print(f'''GK quality: {gk.overall}, SHOOTER quality: {shooter.overall}''')
     prob_goal = 73
     prob_miss = 7
@@ -168,7 +168,7 @@ def penalty(gk, shooter):
     shooter_decision = random.choices(shooter_strategy, weights=(10,25,65), k=1)
     gk_decision = random.choices(gk_strategy, weights=(60,25,15), k=1)
     chosen_style = random.choices(penalty_style, weights=(65,30,5), k=1)
-    print(f'{shooter.last} ({shooter.team}) decides to {chosen_style[0]} {shooter_decision[0]} while {gk.last} ({gk.team}) decides to {gk_decision[0]}')
+    print(f'{shooter.first} {shooter.last} ({shooter.team}) decides to {chosen_style[0]} {shooter_decision[0]} while {gk.first} {gk.last} ({gk.team}) decides to {gk_decision[0]}')
     if chosen_style[0] == 'powerstrike':
         if shooter.power > shooter.precision:
             power_delta = shooter.power - shooter.precision
@@ -321,13 +321,17 @@ def penalty(gk, shooter):
             prob_goal -= 11
             prob_save += 11
             # return penalty_outcome[0]
-        else:
+        elif quality_diff > 5:
             prob_goal -= 7
-            prob_save += 7
+            prob_save += 4
+            prob_miss += 3
+        else:
+            prob_goal -= 5
+            prob_save += 3
+            prob_miss += 2
             # return penalty_outcome[0]
+    update_player_stats(outcome, gk.id, shooter.id)
     return penalty_outcome[0]
-
-
 
 def update_result(outcome):
     if outcome == 'goal':
@@ -339,7 +343,23 @@ def print_partial(outcome, team1, team2):
         print(f'{outcome.title()}!')
         print(f'{team1.name}: {team1.partial} - {team2.name}: {team2.partial}\r\n')
 
-match(1,6)
+def update_player_stats(outcome, gk, shooter):
+    c.execute('INSERT OR IGNORE INTO player_stats (player_id, total_shots) VALUES (?, ?)', (gk, 0))
+    c.execute('INSERT OR IGNORE INTO player_stats (player_id, total_shots) VALUES (?, ?)', (shooter, 0))
+    c.execute('SELECT total_shots FROM player_stats WHERE player_id = ?', (gk,))
+    gk_total_shots = c.fetchone()[0]
+    c.execute('SELECT total_shots FROM player_stats WHERE player_id = ?', (shooter,))
+    shooter_total_shots = c.fetchone()[0]
+    gk_total_shots += 1
+    shooter_total_shots +=1
+    with conn:
+        c.execute('UPDATE player_stats SET total_shots = ? WHERE player_id = ?', (gk_total_shots, gk))
+        c.execute('UPDATE player_stats SET total_shots = ? WHERE player_id = ?', (shooter_total_shots, shooter))
+    print(f'Gk total shots: {gk_total_shots}')
+    print(f'Shooter total shots: {gk_total_shots}')
+
+
+match(3,2)
 
 
 

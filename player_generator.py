@@ -240,7 +240,18 @@ list_players_overall = pd.read_sql('''SELECT id, first, last, age, player_type, 
 
 # with conn:
 #     c.execute('ALTER TABLE teams ADD COLUMN short TEXT')
+c.executescript("""
+    DROP TABLE IF EXISTS player_stats;
 
+    CREATE TABLE player_stats(
+    player_id INTEGER NOT NULL UNIQUE,
+    total_shots INTEGER,
+    scored INTEGER,
+    missed INTEGER,
+    saved INTEGER,
+    FOREIGN KEY (player_id)
+        REFERENCES players (id)
+)""")
 
 c.close()
 
@@ -254,15 +265,7 @@ c.close()
 #     c.execute('DELETE FROM players WHERE id > 50;')
 
 
-# c.execute("""CREATE TABLE player_stats(
-#     player_id INTEGER NOT NULL,
-#     total_shots INTEGER,
-#     scored INTEGER,
-#     missed INTEGER,
-#     saved INTEGER,
-#     FOREIGN KEY (player_id)
-#         REFERENCES players (id)
-# )""")
+
 
 
 
