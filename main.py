@@ -344,22 +344,35 @@ def print_partial(outcome, team1, team2):
         print(f'{team1.name}: {team1.partial} - {team2.name}: {team2.partial}\r\n')
 
 def update_player_stats(outcome, gk, shooter):
-    c.execute('INSERT OR IGNORE INTO player_stats (player_id, total_shots) VALUES (?, ?)', (gk, 0))
-    c.execute('INSERT OR IGNORE INTO player_stats (player_id, total_shots) VALUES (?, ?)', (shooter, 0))
+    c.execute('INSERT OR IGNORE INTO player_stats (player_id, total_shots, scored, saved, missed) VALUES (?, ?, ?, ?, ?)', (gk, 0, 0, 0, 0))
+    c.execute('INSERT OR IGNORE INTO player_stats (player_id, total_shots, scored, saved, missed) VALUES (?, ?, ?, ?, ?)', (shooter, 0, 0, 0, 0))
     c.execute('SELECT total_shots FROM player_stats WHERE player_id = ?', (gk,))
     gk_total_shots = c.fetchone()[0]
     c.execute('SELECT total_shots FROM player_stats WHERE player_id = ?', (shooter,))
     shooter_total_shots = c.fetchone()[0]
-    gk_total_shots += 1
-    shooter_total_shots +=1
     with conn:
-        c.execute('UPDATE player_stats SET total_shots = ? WHERE player_id = ?', (gk_total_shots, gk))
-        c.execute('UPDATE player_stats SET total_shots = ? WHERE player_id = ?', (shooter_total_shots, shooter))
-    print(f'Gk total shots: {gk_total_shots}')
-    print(f'Shooter total shots: {gk_total_shots}')
+        c.execute('UPDATE player_stats SET total_shots = ? WHERE player_id = ?', (gk_total_shots + 1, gk))
+        c.execute('UPDATE player_stats SET total_shots = ? WHERE player_id = ?', (shooter_total_shots + 1, shooter))
+    if str(outcome) == 'goal':
+        with conn:
+            c.execute('SELECT scored FROM player_stats WHERE player_id = ?', (shooter))
+            scored = c.fetchone()[0]
+            print('scored: ',scored)
+            print('scored + 1: ',scored)
+            c.execute('UPDATE player_stats SET scored = ? WHERE player_id = ?', (int(scored) + 1, shooter))
+    if outcome == 'save':
+        with conn:
+            c.execute('SELECT missed FROM player_stats WHERE player_id = ?', (shooter))
+            missed = c.fetchone()[0]
+            c.execute('UPDATE player_stats SET missed = ? WHERE player_id = ?', (int(missed) + 1, shooter))
+            c.execute('SELECT saved FROM player_stats WHERE player_id = ?', (gk))
+            saved = c.fetchone()[0]
+            print('saved: ',saved)
+            print('saved + 1: ',saved)
+            c.execute('UPDATE player_stats SET saved = ? WHERE player_id = ?', (int(saved) + 1, gk))
 
 
-match(3,2)
+match(6,4)
 
 
 
