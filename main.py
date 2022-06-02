@@ -152,7 +152,11 @@ def match(match_id):
     team1.partial += update
     print_partial(outcome,team1,team2)
 
-    update_team_stats(team1_id, team2_id, team1.partial,team2.partial,season_id)
+    t1_result = int(team1.partial)
+    t2_result = int(team2.partial)
+
+    update_team_stats(team1_id, team2_id, t1_result, t2_result, season_id)
+
     print(f'Final result: {team1.name}: {team1.partial} - {team2.name}: {team2.partial}')
 
 
@@ -312,6 +316,7 @@ def penalty(gk, shooter):
             prob_goal -= 5
             prob_save += 3
             prob_miss += 2
+
     update_player_stats(penalty_outcome[0], gk.id, shooter.id)
     return penalty_outcome[0]
 
@@ -328,19 +333,37 @@ def print_partial(outcome, team1, team2):
 def update_team_stats(t1, t2, t1_result,t2_result, season_id):
     #updates team stats and league table based on the final result
     #receives 2 team ids, 2 results and the season_id, returns points on the table and team_stats
-    c.execute('SELECT points FROM league_tables WHERE season_id = ? and team_id = ?', (season_id, t1))
+    c.execute('SELECT points FROM league_tables WHERE season_id = ? AND team_id = ?', (season_id, t1,))
     t1_points = c.fetchone()[0]
-    c.execute('SELECT points FROM league_tables WHERE season_id = ? and team_id = ?', (season_id, t2))
+    c.execute('SELECT wins FROM league_tables WHERE season_id = ? AND team_id = ?', (season_id, t1,))
+    t1_wins = c.fetchone()[0]
+    c.execute('SELECT draws FROM league_tables WHERE season_id = ? AND team_id = ?', (season_id, t1,))
+    t1_draws = c.fetchone()[0]
+    c.execute('SELECT losses FROM league_tables WHERE season_id = ? AND team_id = ?', (season_id, t1,))
+    t1_losses = c.fetchone()[0]
+    c.execute('SELECT points FROM league_tables WHERE season_id = ? AND team_id = ?', (season_id, t2,))
     t2_points = c.fetchone()[0]
+    c.execute('SELECT wins FROM league_tables WHERE season_id = ? AND team_id = ?', (season_id, t2,))
+    t2_wins = c.fetchone()[0]
+    c.execute('SELECT draws FROM league_tables WHERE season_id = ? AND team_id = ?', (season_id, t2,))
+    t2_draws = c.fetchone()[0]
+    c.execute('SELECT losses FROM league_tables WHERE season_id = ? AND team_id = ?', (season_id, t2,))
+    t2_losses = c.fetchone()[0]
     if t1_result == t2_result:
         #handles a draw
-        c.execute('UPDATE league_tables SET points = ? WHERE season_id = ? and team_id = ?', (t1_points + 1, season_id, t1,))
-        c.execute('UPDATE league_tables SET points = ? WHERE season_id = ? and team_id = ?', (t2_points + 1, season_id, t2,))
+        c.execute('UPDATE league_tables SET points = ? WHERE season_id = ? AND team_id = ?', (t1_points + 1, season_id, t1,))
+        c.execute('UPDATE league_tables SET points = ? WHERE season_id = ? AND team_id = ?', (t2_points + 1, season_id, t2,))
+        c.execute('UPDATE league_tables SET draws = ? WHERE season_id = ? AND team_id = ?', (t1_draws + 1, season_id, t1,))
+        c.execute('UPDATE league_tables SET draws = ? WHERE season_id = ? AND team_id = ?', (t2_draws + 1, season_id, t2,))
     elif t1_result > t2_result:
         #handles a draw
-        c.execute('UPDATE league_tables SET points = ? WHERE season_id = ? and team_id = ?', (t1_points + 3, season_id, t1,))
+        c.execute('UPDATE league_tables SET points = ? WHERE season_id = ? AND team_id = ?', (t1_points + 3, season_id, t1,))
+        c.execute('UPDATE league_tables SET wins = ? WHERE season_id = ? AND team_id = ?', (t1_wins + 1, season_id, t1,))
+        c.execute('UPDATE league_tables SET losses = ? WHERE season_id = ? AND team_id = ?', (t2_losses + 1, season_id, t2,))
     else:
-        c.execute('UPDATE league_tables SET points = ? WHERE season_id = ? and team_id = ?', (t2_points + 3, season_id, t2,))
+        c.execute('UPDATE league_tables SET points = ? WHERE season_id = ? AND team_id = ?', (t2_points + 3, season_id, t2,))
+        c.execute('UPDATE league_tables SET wins = ? WHERE season_id = ? AND team_id = ?', (t2_wins + 1, season_id, t2,))
+        c.execute('UPDATE league_tables SET losses = ? WHERE season_id = ? AND team_id = ?', (t1_losses + 1, season_id, t1,))
     conn.commit()
 
 
@@ -370,7 +393,23 @@ def update_player_stats(outcome, gk, shooter):
     conn.commit()
 
 
-match(1)
+
+with conn:
+    c.execute('SELECT id FROM matches WHERE season_id = ?', (1,))
+    matches = c.fetchall()
+    
+schedule = []
+for n in matches:
+    schedule.append(n[0])
+
+def match_list(matches):
+    for m in matches:
+        match(m)
+
+    
+match_list(schedule)
+
+
 
 
 

@@ -195,6 +195,14 @@ def list_roster(team_id):
         c.execute(team_roster)
         return df
 
+def list_table(season_id):
+    select_table = '''SELECT teams.name, league_tables.points AS points, league_tables.wins AS wins, league_tables.draws AS draws, league_tables.losses AS losses
+    FROM teams INNER JOIN league_tables ON teams.id = league_tables.team_id WHERE season_id = '%s' ORDER BY league_tables.points DESC''' % season_id
+    df = pd.read_sql(select_table, engine)
+    with conn:
+        c.execute(select_table)
+        print(df)
+
 def draft_players():
     #makes one draft round
     pick_order = [2, 8, 4, 5, 3, 7, 1, 6, 6, 1, 7, 3, 5, 4, 8, 2, 2, 8, 4, 5, 3, 7, 1, 6, 6, 1, 7, 3, 5, 4, 8, 2, 2, 8, 4, 5, 3, 7, 1, 6, 6, 1, 7, 3, 5, 4, 8, 2,]
@@ -229,9 +237,6 @@ list_players_team = pd.read_sql('''SELECT players.id, first, last, age, power, p
 list_players_overall = pd.read_sql('''SELECT id, first, last, age, player_type, overall, team_id, power, precision, coolness, concentration, diving, instinct, positioning
     FROM players WHERE team_id IS NULL ORDER BY overall DESC LIMIT 20''', engine)
 
-
-
-#DB COMMAND
 table_lines = [(1, 1, 0, 0, 0, 0, 0),
             (1, 2, 0, 0, 0, 0, 0),
             (1, 3, 0, 0, 0, 0, 0),
@@ -241,8 +246,31 @@ table_lines = [(1, 1, 0, 0, 0, 0, 0),
             (1, 7, 0, 0, 0, 0, 0),
             (1, 8, 0, 0, 0, 0, 0),
     ]
+
+game1 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+game2 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+game3 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+game4 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+game5 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+game6 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+game7 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+game8 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+
+#DB COMMAND
 with conn:
-    c.executemany('INSERT INTO league_tables (season_id, team_id, points, goal_diff, wins, draws, losses) VALUES (?,?,?,?,?,?,?);', table_lines)
+    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game1)
+    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game2)
+    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game3)
+    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game4)
+    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game5)
+    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game6)
+    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game7)
+    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game8)
+
+list_table(1)
+
+# with conn:
+#     c.executemany('INSERT INTO league_tables (season_id, team_id, points, goal_diff, wins, draws, losses) VALUES (?,?,?,?,?,?,?);', table_lines)
 
     # c.execute('INSERT INTO matches (id, season_id, home_team_id, away_team_id) VALUES ( ?, ?, ?, ?)', (1, 1, 2, 6,))
     # c.execute('INSERT INTO seasons (name) VALUES (?)', ('Test season',))
