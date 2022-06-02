@@ -232,32 +232,90 @@ list_players_overall = pd.read_sql('''SELECT id, first, last, age, player_type, 
 
 
 #DB COMMAND
+table_lines = [(1, 1, 0, 0, 0, 0, 0),
+            (1, 2, 0, 0, 0, 0, 0),
+            (1, 3, 0, 0, 0, 0, 0),
+            (1, 4, 0, 0, 0, 0, 0),
+            (1, 5, 0, 0, 0, 0, 0),
+            (1, 6, 0, 0, 0, 0, 0),
+            (1, 7, 0, 0, 0, 0, 0),
+            (1, 8, 0, 0, 0, 0, 0),
+    ]
+with conn:
+    c.executemany('INSERT INTO league_tables (season_id, team_id, points, goal_diff, wins, draws, losses) VALUES (?,?,?,?,?,?,?);', table_lines)
+
+    # c.execute('INSERT INTO matches (id, season_id, home_team_id, away_team_id) VALUES ( ?, ?, ?, ?)', (1, 1, 2, 6,))
+    # c.execute('INSERT INTO seasons (name) VALUES (?)', ('Test season',))
 
 
+# c.executescript('''
+#     DROP TABLE IF EXISTS matches;
 
-# draft_players()
-# print(list_players_overall)
+#     CREATE TABLE matches(
+#         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+#         season_id INTEGER,
+#         home_team_id INTEGER,
+#         away_team_id INTEGER,
+#         FOREIGN KEY (season_id)
+#             REFERENCES seasons (id),
+#         FOREIGN KEY (home_team_id)
+#             REFERENCES teams (id),
+#         FOREIGN KEY (away_team_id)
+#             REFERENCES teams (id)
+#     );
+#     ''')
 
-# with conn:
-#     c.execute('ALTER TABLE teams ADD COLUMN short TEXT')
-c.executescript("""
-    DROP TABLE IF EXISTS player_stats;
 
-    CREATE TABLE player_stats(
-    player_id INTEGER NOT NULL UNIQUE,
-    total_shots INTEGER,
-    scored INTEGER,
-    missed INTEGER,
-    saved INTEGER,
-    FOREIGN KEY (player_id)
-        REFERENCES players (id)
-)""")
+# c.executescript("""
+#     DROP TABLE IF EXISTS seasons;
+#     DROP TABLE IF EXISTS league_tables;
+
+#     CREATE TABLE seasons(
+#     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+#     name TEXT
+# );
+#     CREATE TABLE league_tables(
+#     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+#     season_id INTEGER,
+#     team_id INTEGER,
+#     points INTEGER,
+#     goal_diff INTEGER,
+#     wins INTEGER,
+#     draws INTEGER,
+#     losses INTEGER,
+#     FOREIGN KEY (season_id)
+#          REFERENCES seasons (id),
+#     FOREIGN KEY (team_id)
+#          REFERENCES teams (id)
+#     )
+# """)
 
 c.close()
 
+# c.executescript("""
+#     DROP TABLE IF EXISTS team_stats;
 
+#     CREATE TABLE team_stats(
+#     team_id INTEGER NOT NULL UNIQUE,
+#     total_wins INTEGER,
+#     total_losses INTEGER,
+#     total_draws INTEGER,
+#     FOREIGN KEY (team_id)
+#         REFERENCES teams (id)
+# )""")
 
+# c.executescript("""
+#     DROP TABLE IF EXISTS player_stats;
 
+#     CREATE TABLE player_stats(
+#     player_id INTEGER NOT NULL UNIQUE,
+#     total_shots INTEGER,
+#     scored INTEGER,
+#     missed INTEGER,
+#     saved INTEGER,
+#     FOREIGN KEY (player_id)
+#         REFERENCES players (id)
+# )""")
 
 # for i in range(50):
 #     insert_shooter()

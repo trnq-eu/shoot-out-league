@@ -32,7 +32,13 @@ def initiate_team(team_id):
         team = c.fetchone()
         return Team(team[0], team[1], team[2])
 
-def match(team1_id,team2_id):
+def match(match_id):
+    c.execute('SELECT season_id FROM matches WHERE id = ?', (match_id,))
+    season_id = c.fetchone()[0]
+    c.execute('SELECT home_team_id FROM matches WHERE id = ?', (match_id,))
+    team1_id = c.fetchone()[0]
+    c.execute('SELECT away_team_id FROM matches WHERE id = ?', (match_id,))
+    team2_id = c.fetchone()[0]
     team1 = initiate_team(team1_id)
     team2 = initiate_team(team2_id)
     team1.partial = 0
@@ -61,36 +67,36 @@ def match(team1_id,team2_id):
     tm1_sht4 = initiate_shooter(team1_shooters[3][0])
     tm1_sht5 = initiate_shooter(team1_shooters[4][0])
     time.sleep(1)
-    print('Formations:\n')
-    time.sleep(1)
-    print(f'{team1.name}:\n')
-    time.sleep(1)
-    print(f'Goalkeeper: {tm1_gk.first} {tm1_gk.last} {tm1_gk.overall}')
-    time.sleep(1)
-    print(f'First shooter: {tm1_sht1.first} {tm1_sht1.last} {tm1_sht1.overall}')
-    time.sleep(1)
-    print(f'Second shooter: {tm1_sht2.first} {tm1_sht2.last} {tm1_sht2.overall}')
-    time.sleep(1)
-    print(f'Third shooter: {tm1_sht3.first} {tm1_sht3.last} {tm1_sht3.overall}')
-    time.sleep(1)
-    print(f'Fourth shooter: {tm1_sht4.first} {tm1_sht4.last} {tm1_sht4.overall}')
-    time.sleep(1)
-    print(f'Fifth shooter: {tm1_sht5.first} {tm1_sht5.last} {tm1_sht5.overall}\n')
-    time.sleep(2)
-    print(f'{team2.name}:\n')
-    time.sleep(1)
-    print(f'Goalkeeper: {tm2_gk.first} {tm2_gk.last} {tm2_gk.overall}')
-    time.sleep(1)
-    print(f'First shooter: {tm2_sht1.first} {tm2_sht1.last} {tm2_sht1.overall}')
-    time.sleep(1)
-    print(f'Second shooter: {tm2_sht2.first} {tm2_sht2.last} {tm2_sht2.overall}')
-    time.sleep(1)
-    print(f'Third shooter: {tm2_sht3.first} {tm2_sht3.last} {tm2_sht3.overall}')
-    time.sleep(1)
-    print(f'Fourth shooter: {tm2_sht4.first} {tm2_sht4.last} {tm2_sht4.overall}')
-    time.sleep(1)
-    print(f'Fifth shooter: {tm2_sht5.first} {tm2_sht5.last} {tm2_sht5.overall}\n')
-    time.sleep(3)
+    # print('Formations:\n')
+    # time.sleep(1)
+    # print(f'{team1.name}:\n')
+    # time.sleep(1)
+    # print(f'Goalkeeper: {tm1_gk.first} {tm1_gk.last} {tm1_gk.overall}')
+    # time.sleep(1)
+    # print(f'First shooter: {tm1_sht1.first} {tm1_sht1.last} {tm1_sht1.overall}')
+    # time.sleep(1)
+    # print(f'Second shooter: {tm1_sht2.first} {tm1_sht2.last} {tm1_sht2.overall}')
+    # time.sleep(1)
+    # print(f'Third shooter: {tm1_sht3.first} {tm1_sht3.last} {tm1_sht3.overall}')
+    # time.sleep(1)
+    # print(f'Fourth shooter: {tm1_sht4.first} {tm1_sht4.last} {tm1_sht4.overall}')
+    # time.sleep(1)
+    # print(f'Fifth shooter: {tm1_sht5.first} {tm1_sht5.last} {tm1_sht5.overall}\n')
+    # time.sleep(2)
+    # print(f'{team2.name}:\n')
+    # time.sleep(1)
+    # print(f'Goalkeeper: {tm2_gk.first} {tm2_gk.last} {tm2_gk.overall}')
+    # time.sleep(1)
+    # print(f'First shooter: {tm2_sht1.first} {tm2_sht1.last} {tm2_sht1.overall}')
+    # time.sleep(1)
+    # print(f'Second shooter: {tm2_sht2.first} {tm2_sht2.last} {tm2_sht2.overall}')
+    # time.sleep(1)
+    # print(f'Third shooter: {tm2_sht3.first} {tm2_sht3.last} {tm2_sht3.overall}')
+    # time.sleep(1)
+    # print(f'Fourth shooter: {tm2_sht4.first} {tm2_sht4.last} {tm2_sht4.overall}')
+    # time.sleep(1)
+    # print(f'Fifth shooter: {tm2_sht5.first} {tm2_sht5.last} {tm2_sht5.overall}\n')
+    # time.sleep(3)
     print('1st ROUND')
     outcome = penalty(tm1_gk,tm2_sht1)
     update = update_result(outcome)
@@ -146,6 +152,7 @@ def match(team1_id,team2_id):
     team1.partial += update
     print_partial(outcome,team1,team2)
 
+    update_team_stats(team1_id, team2_id, team1.partial,team2.partial,season_id)
     print(f'Final result: {team1.name}: {team1.partial} - {team2.name}: {team2.partial}')
 
 
@@ -206,19 +213,15 @@ def penalty(gk, shooter):
             if shot_quality >= dive_quality:
                 prob_goal -= 3
                 prob_save += 3
-                # return penalty_outcome[0]
             elif quality_diff > 10:
                 prob_goal -= 8
                 prob_save += 8
-                # return penalty_outcome[0]
             else:
                 prob_goal -= 5
                 prob_save += 5
-                # return penalty_outcome[0]
         else:
             prob_goal += 2
             prob_save -= 2
-            # return penalty_outcome[0]
     elif shooter_decision[0] == 'check' and gk_decision[0] == 'just-dive':
         shot_quality = shooter.coolness + shooter.precision
         dive_quality = gk.concentration + gk.instinct
@@ -226,11 +229,9 @@ def penalty(gk, shooter):
         if shot_quality >= dive_quality:
             prob_goal += 5
             prob_save -= 5
-            # return penalty_outcome[0]
         else:
             prob_goal += 3
             prob_save -= 3
-            # return penalty_outcome[0]
     elif shooter_decision[0] == 'feint' and gk_decision[0] == 'just-dive':
         shot_quality = shooter.coolness + shooter.precision
         dive_quality = gk.concentration + gk.instinct
@@ -238,13 +239,9 @@ def penalty(gk, shooter):
         if shot_quality >= dive_quality:
             prob_goal += 4
             prob_save -= 4
-            # return penalty_outcome[0]
         elif quality_diff > 10:
             prob_goal -= 2
             prob_save += 2
-            # return penalty_outcome[0]
-        # else:
-        #     # return penalty_outcome[0]
     elif shooter_decision[0] == 'feint' and gk_decision[0] == 'wait':
         shot_quality = shooter.coolness + shooter.precision + shooter.power
         dive_quality = gk.concentration + gk.instinct + gk.diving
@@ -252,15 +249,12 @@ def penalty(gk, shooter):
         if shot_quality >= dive_quality:
             prob_goal -= 3
             prob_save += 3
-            # return penalty_outcome[0]
         elif quality_diff > 10:
             prob_goal -= 10
             prob_save += 10
-            # return penalty_outcome[0]
         else:
             prob_goal -= 6
             prob_save += 6
-            # return penalty_outcome[0]
     elif shooter_decision[0] == 'check' and gk_decision[0] == 'wait':
         shot_quality = shooter.coolness + shooter.precision + shooter.power
         dive_quality = gk.concentration + gk.instinct + gk.diving
@@ -268,15 +262,12 @@ def penalty(gk, shooter):
         if shot_quality >= dive_quality:
             prob_goal -= 1
             prob_save += 1
-            # return penalty_outcome[0]
         elif quality_diff > 10:
             prob_goal -= 5
             prob_save += 5
-            # return penalty_outcome[0]
         else:
             prob_goal -= 3
             prob_save += 3
-            # return penalty_outcome[0]
     elif shooter_decision[0] == 'just-shoot' and gk_decision[0] == 'wait':
         shot_quality = shooter.coolness + shooter.precision + shooter.power
         dive_quality = gk.concentration + gk.instinct + gk.diving
@@ -284,15 +275,12 @@ def penalty(gk, shooter):
         if shot_quality >= dive_quality:
             prob_goal -= 2
             prob_save += 2
-            # return penalty_outcome[0]
         elif quality_diff > 10:
             prob_goal -= 10
             prob_save += 10
-            # return penalty_outcome[0]
         else:
             prob_goal -= 5
             prob_save += 5
-            # return penalty_outcome[0]
     elif shooter_decision[0] == 'feint' and gk_decision[0] == 'distract':
         shot_quality = shooter.coolness + shooter.precision + shooter.concentration
         dive_quality = gk.concentration + gk.instinct + gk.diving
@@ -300,15 +288,12 @@ def penalty(gk, shooter):
         if shot_quality >= dive_quality:
             prob_goal += 1
             prob_save -= 1
-            # return penalty_outcome[0]
         elif quality_diff > 10:
             prob_goal -= 7
             prob_save += 7
-            # return penalty_outcome[0]
         else:
             prob_goal -= 3
             prob_save += 3
-            # return penalty_outcome[0]
     elif shooter_decision[0] == 'check' and gk_decision[0] == 'distract':
         shot_quality = shooter.coolness + shooter.precision + shooter.concentration
         dive_quality = gk.concentration + gk.instinct + gk.diving
@@ -316,11 +301,9 @@ def penalty(gk, shooter):
         if shot_quality >= dive_quality:
             prob_goal += 1
             prob_save -= 1
-            # return penalty_outcome[0]
         elif quality_diff > 10:
             prob_goal -= 11
             prob_save += 11
-            # return penalty_outcome[0]
         elif quality_diff > 5:
             prob_goal -= 7
             prob_save += 4
@@ -329,8 +312,7 @@ def penalty(gk, shooter):
             prob_goal -= 5
             prob_save += 3
             prob_miss += 2
-            # return penalty_outcome[0]
-    update_player_stats(outcome, gk.id, shooter.id)
+    update_player_stats(penalty_outcome[0], gk.id, shooter.id)
     return penalty_outcome[0]
 
 def update_result(outcome):
@@ -343,6 +325,26 @@ def print_partial(outcome, team1, team2):
         print(f'{outcome.title()}!')
         print(f'{team1.name}: {team1.partial} - {team2.name}: {team2.partial}\r\n')
 
+def update_team_stats(t1, t2, t1_result,t2_result, season_id):
+    #updates team stats and league table based on the final result
+    #receives 2 team ids, 2 results and the season_id, returns points on the table and team_stats
+    c.execute('SELECT points FROM league_tables WHERE season_id = ? and team_id = ?', (season_id, t1))
+    t1_points = c.fetchone()[0]
+    c.execute('SELECT points FROM league_tables WHERE season_id = ? and team_id = ?', (season_id, t2))
+    t2_points = c.fetchone()[0]
+    if t1_result == t2_result:
+        #handles a draw
+        c.execute('UPDATE league_tables SET points = ? WHERE season_id = ? and team_id = ?', (t1_points + 1, season_id, t1,))
+        c.execute('UPDATE league_tables SET points = ? WHERE season_id = ? and team_id = ?', (t2_points + 1, season_id, t2,))
+    elif t1_result > t2_result:
+        #handles a draw
+        c.execute('UPDATE league_tables SET points = ? WHERE season_id = ? and team_id = ?', (t1_points + 3, season_id, t1,))
+    else:
+        c.execute('UPDATE league_tables SET points = ? WHERE season_id = ? and team_id = ?', (t2_points + 3, season_id, t2,))
+    conn.commit()
+
+
+
 def update_player_stats(outcome, gk, shooter):
     c.execute('INSERT OR IGNORE INTO player_stats (player_id, total_shots, scored, saved, missed) VALUES (?, ?, ?, ?, ?)', (gk, 0, 0, 0, 0))
     c.execute('INSERT OR IGNORE INTO player_stats (player_id, total_shots, scored, saved, missed) VALUES (?, ?, ?, ?, ?)', (shooter, 0, 0, 0, 0))
@@ -350,29 +352,25 @@ def update_player_stats(outcome, gk, shooter):
     gk_total_shots = c.fetchone()[0]
     c.execute('SELECT total_shots FROM player_stats WHERE player_id = ?', (shooter,))
     shooter_total_shots = c.fetchone()[0]
-    with conn:
-        c.execute('UPDATE player_stats SET total_shots = ? WHERE player_id = ?', (gk_total_shots + 1, gk))
-        c.execute('UPDATE player_stats SET total_shots = ? WHERE player_id = ?', (shooter_total_shots + 1, shooter))
-    if str(outcome) == 'goal':
-        with conn:
-            c.execute('SELECT scored FROM player_stats WHERE player_id = ?', (shooter))
-            scored = c.fetchone()[0]
-            print('scored: ',scored)
-            print('scored + 1: ',scored)
-            c.execute('UPDATE player_stats SET scored = ? WHERE player_id = ?', (int(scored) + 1, shooter))
+    c.execute('SELECT scored FROM player_stats WHERE player_id = ?', (shooter,))
+    scored = c.fetchone()[0]
+    c.execute('SELECT missed FROM player_stats WHERE player_id = ?', (shooter,))
+    missed = c.fetchone()[0]
+    c.execute('SELECT saved FROM player_stats WHERE player_id = ?', (gk,))
+    saved = c.fetchone()[0]
+    c.execute('UPDATE player_stats SET total_shots = ? WHERE player_id = ?', (gk_total_shots + 1, gk,))
+    c.execute('UPDATE player_stats SET total_shots = ? WHERE player_id = ?', (shooter_total_shots + 1, shooter,))
+    if outcome == 'goal': 
+        c.execute('UPDATE player_stats SET scored = ? WHERE player_id = ?', (scored + 1, shooter,))
+    if outcome == 'missed':
+        c.execute('UPDATE player_stats SET missed = ? WHERE player_id = ?', (missed + 1, shooter,))
     if outcome == 'save':
-        with conn:
-            c.execute('SELECT missed FROM player_stats WHERE player_id = ?', (shooter))
-            missed = c.fetchone()[0]
-            c.execute('UPDATE player_stats SET missed = ? WHERE player_id = ?', (int(missed) + 1, shooter))
-            c.execute('SELECT saved FROM player_stats WHERE player_id = ?', (gk))
-            saved = c.fetchone()[0]
-            print('saved: ',saved)
-            print('saved + 1: ',saved)
-            c.execute('UPDATE player_stats SET saved = ? WHERE player_id = ?', (int(saved) + 1, gk))
+        c.execute('UPDATE player_stats SET saved = ? WHERE player_id = ?', (saved + 1, gk,))
+        c.execute('UPDATE player_stats SET missed = ? WHERE player_id = ?', (missed + 1, shooter,))
+    conn.commit()
 
 
-match(6,4)
+match(1)
 
 
 
