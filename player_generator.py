@@ -247,8 +247,8 @@ table_lines = [(1, 1, 0, 0, 0, 0, 0),
             (1, 8, 0, 0, 0, 0, 0),
     ]
 
-game1 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-# game2 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+# game1 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+game2 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
 # game3 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
 # game4 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
 # game5 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
@@ -257,13 +257,15 @@ game1 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.r
 # game8 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
 
 #DB COMMAND
+# list_table(1)
+
 # with conn:
 #     c.executemany('''INSERT INTO league_tables (season_id, team_id, points, goal_diff, wins, draws, losses) 
 #       VALUES (?,?,?,?,?,?,?);''', table_lines)
 
 with conn:
-    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game1)
-#     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game2)
+#     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game1)
+    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game2)
 #     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game3)
 #     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game4)
 #     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game5)
