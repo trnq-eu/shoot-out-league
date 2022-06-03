@@ -411,6 +411,4 @@ match_list(schedule)
 
 
 
-
-
 c.close()

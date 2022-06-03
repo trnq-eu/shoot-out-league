@@ -226,16 +226,16 @@ def draft_players():
 # select_goalkeepers = pd.read_sql('SELECT * FROM players WHERE player_type=0', engine)
 # select_shooters = pd.read_sql('SELECT id, first, last, age, power, precision, concentration, coolness FROM players WHERE player_type=1', engine)
 # select_players = pd.read_sql('SELECT * FROM players', engine)
-list_gk_overall = pd.read_sql('SELECT id, first, last, age, diving, positioning, instinct, overall, team_id FROM players WHERE player_type=0 ORDER BY overall DESC', engine)
-# list_shooters_overall = pd.read_sql('SELECT first, last, age, power, precision, coolness, overall, team_id FROM players WHERE player_type=1 ORDER BY overall DESC', engine)
-list_shooters_FAs = pd.read_sql('''SELECT id, first, last, age, power, precision, coolness, overall, team_id
-    FROM players WHERE player_type=1 AND team_id IS NULL ORDER BY overall DESC''', engine)
-list_gk_FAs = pd.read_sql('''SELECT id, first, last, age, diving, instinct, positioning, overall, team_id
-    FROM players WHERE player_type=0 AND team_id IS NULL ORDER BY overall DESC''', engine)
-list_players_team = pd.read_sql('''SELECT players.id, first, last, age, power, precision, coolness, concentration, diving, instinct, positioning, overall, teams.name
-    FROM players INNER JOIN teams ON players.team_id = teams.id ORDER BY overall DESC''', engine)
-list_players_overall = pd.read_sql('''SELECT id, first, last, age, player_type, overall, team_id, power, precision, coolness, concentration, diving, instinct, positioning
-    FROM players WHERE team_id IS NULL ORDER BY overall DESC LIMIT 20''', engine)
+# list_gk_overall = pd.read_sql('SELECT id, first, last, age, diving, positioning, instinct, overall, team_id FROM players WHERE player_type=0 ORDER BY overall DESC', engine)
+# # list_shooters_overall = pd.read_sql('SELECT first, last, age, power, precision, coolness, overall, team_id FROM players WHERE player_type=1 ORDER BY overall DESC', engine)
+# list_shooters_FAs = pd.read_sql('''SELECT id, first, last, age, power, precision, coolness, overall, team_id
+#     FROM players WHERE player_type=1 AND team_id IS NULL ORDER BY overall DESC''', engine)
+# list_gk_FAs = pd.read_sql('''SELECT id, first, last, age, diving, instinct, positioning, overall, team_id
+#     FROM players WHERE player_type=0 AND team_id IS NULL ORDER BY overall DESC''', engine)
+# list_players_team = pd.read_sql('''SELECT players.id, first, last, age, power, precision, coolness, concentration, diving, instinct, positioning, overall, teams.name
+#     FROM players INNER JOIN teams ON players.team_id = teams.id ORDER BY overall DESC''', engine)
+# list_players_overall = pd.read_sql('''SELECT id, first, last, age, player_type, overall, team_id, power, precision, coolness, concentration, diving, instinct, positioning
+#     FROM players WHERE team_id IS NULL ORDER BY overall DESC LIMIT 20''', engine)
 
 table_lines = [(1, 1, 0, 0, 0, 0, 0),
             (1, 2, 0, 0, 0, 0, 0),
@@ -248,29 +248,31 @@ table_lines = [(1, 1, 0, 0, 0, 0, 0),
     ]
 
 game1 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-game2 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-game3 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-game4 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-game5 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-game6 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-game7 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-game8 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+# game2 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+# game3 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+# game4 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+# game5 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+# game6 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+# game7 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+# game8 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
 
 #DB COMMAND
+# with conn:
+#     c.executemany('''INSERT INTO league_tables (season_id, team_id, points, goal_diff, wins, draws, losses) 
+#       VALUES (?,?,?,?,?,?,?);''', table_lines)
+
 with conn:
     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game1)
-    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game2)
-    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game3)
-    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game4)
-    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game5)
-    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game6)
-    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game7)
-    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game8)
+#     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game2)
+#     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game3)
+#     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game4)
+#     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game5)
+#     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game6)
+#     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game7)
+#     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game8)
 
-list_table(1)
 
-# with conn:
-#     c.executemany('INSERT INTO league_tables (season_id, team_id, points, goal_diff, wins, draws, losses) VALUES (?,?,?,?,?,?,?);', table_lines)
+
 
     # c.execute('INSERT INTO matches (id, season_id, home_team_id, away_team_id) VALUES ( ?, ?, ?, ?)', (1, 1, 2, 6,))
     # c.execute('INSERT INTO seasons (name) VALUES (?)', ('Test season',))
