@@ -54,6 +54,7 @@ cover/
 # DB
 penalty_db.sqlite
 db/
+db_/
 
 # Translations
 *.mo
