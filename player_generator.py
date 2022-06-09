@@ -97,6 +97,7 @@ for row in file_list_it:
 ###
 
 def insert_gk():
+    #generates new goalkeepers
     first = str(random.choice(first_names_list).title())
     last = str(random.choice(family_names_list).title())
     age = str(random.randint(18, 34))
@@ -109,14 +110,17 @@ def insert_gk():
     coolness = random.randint(10, 99)
     improvement = random.randint(5, 30)
     improvement_pace = random.randint(1, 5)
+    training_days = 0
+
 
     with conn:
         c.execute("""
-        INSERT INTO players (first, last, age, player_type, diving, positioning, instinct, concentration, power, precision, coolness, improvement, improvement_pace)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        (first, last, age, 0, diving, positioning, instinct, concentration, power, precision, coolness, improvement, improvement_pace))
+        INSERT INTO players (first, last, age, player_type, diving, positioning, instinct, concentration, power, precision, coolness, improvement, improvement_pace, training_days)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        (first, last, age, 0, diving, positioning, instinct, concentration, power, precision, coolness, improvement, improvement_pace, training_days))
 
 def insert_shooter():
+    #generates new shooters
     first = str(random.choice(first_names_list).title())
     last = str(random.choice(family_names_list).title())
     age = str(random.randint(18, 34))
@@ -129,12 +133,13 @@ def insert_shooter():
     coolness = random.randint(70, 99)
     improvement = random.randint(5, 30)
     improvement_pace = random.randint(1, 5)
+    training_days = 0
 
     with conn:
         c.execute("""
-        INSERT INTO players (first, last, age, player_type, diving, positioning, instinct, concentration, power, precision, coolness, improvement, improvement_pace)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        (first, last, age, 1, diving, positioning, instinct, concentration, power, precision, coolness, improvement, improvement_pace))
+        INSERT INTO players (first, last, age, player_type, diving, positioning, instinct, concentration, power, precision, coolness, improvement, improvement_pace, training_days)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        (first, last, age, 1, diving, positioning, instinct, concentration, power, precision, coolness, improvement, improvement_pace, training_days))
 
 def select_gk():
     with conn:
@@ -203,9 +208,8 @@ def list_table(season_id):
         c.execute(select_table)
         print(df)
 
-def draft_players():
+def draft_players(pick_order):
     #makes one draft round
-    pick_order = [2, 8, 4, 5, 3, 7, 1, 6, 6, 1, 7, 3, 5, 4, 8, 2, 2, 8, 4, 5, 3, 7, 1, 6, 6, 1, 7, 3, 5, 4, 8, 2, 2, 8, 4, 5, 3, 7, 1, 6, 6, 1, 7, 3, 5, 4, 8, 2,]
     with conn:
         for pick in pick_order:
             c.execute('SELECT id FROM players WHERE team_id IS NULL ORDER BY overall DESC')
@@ -244,28 +248,120 @@ table_lines = [(1, 1, 0, 0, 0, 0, 0),
             (1, 5, 0, 0, 0, 0, 0),
             (1, 6, 0, 0, 0, 0, 0),
             (1, 7, 0, 0, 0, 0, 0),
-            (1, 8, 0, 0, 0, 0, 0),
-    ]
+            (1, 8, 0, 0, 0, 0, 0),]
 
-# game1 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-game2 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-# game3 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-# game4 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-# game5 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-# game6 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-# game7 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
-# game8 = [(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8)),(random.randint(1,8),random.randint(1,8))]
+africana = [(2, 'Nihils of the Nile', 'Alexandria', 'Egypt'), 
+    (2, 'Rocambolesca Mozambique', 'Maputo', 'Mozambique'),
+    (2, 'Equatoreana Penalties Libreville', 'Libreville', 'Gabon'),
+    (2, 'Pirates of the Namibian Sea', 'Mariental', 'Namibia'),
+    (2, 'Precisos de Lagos', 'Lagos', 'Angola'),
+    (2, 'Metropol Carthago', 'Carthage', 'Tunisia'),
+    (2, 'Botswana Bots Powershooters', 'Ghanzi', 'Botswana'),
+    (2, 'Equatoriana Penalties Libreville', 'Libreville', 'Gabon')]
+
+americana = [(3, 'Academia Brasileira Batidores', 'Salvador de Bahia', 'Brazil'), 
+    (3, 'Tulsa Checklisters', 'Tulsa', 'USA'),
+    (3, 'Canadian Fahrenheits', 'Montreal', 'Canada'),
+    (3, 'Uruguagia Kickers', 'Montevideo', 'Uruguay'),
+    (3, 'Mexicana Deep Shots', 'Tijuana', 'Mexico'),
+    (3, 'Smooth Bolivians', 'Carthage', 'La Paz'),
+    (3, 'Alaskickers', 'Anchorage', 'USA'),
+    (3, 'Universidad Chilena de Panenka', 'Santiago', 'Chile')]
+
+
+asiatica = [(4, 'Kyoto Blossom Penalties', 'Kyoto', 'Japan'), 
+    (4, 'Varanasi Dukkhas', 'Varanasi', 'India'),
+    (4, 'Shooters of the Gange', 'Kanpur', 'India'),
+    (4, 'Thai Thai Goalies', 'Phuket', 'Thailand'),
+    (4, 'Sichuan No-Nos', 'Chengduh', 'China'),
+    (4, 'TWN', 'Taiwan', 'Taiwan'),
+    (4, 'Puruogangri Cool Kicks', 'Nagqu', 'Tibet'),
+    (4, 'Ulan Batteurs', 'Ulan Bator', 'Mongolia')]
+
+league_tables_teams = [(1, 1, 1, 0, 0, 0, 0, 0),
+                    (1, 2, 1, 0, 0, 0, 0, 0),
+                    (1, 3, 1, 0, 0, 0, 0, 0),
+                    (1, 4, 1, 0, 0, 0, 0, 0),
+                    (1, 5, 1, 0, 0, 0, 0, 0),
+                    (1, 6, 1, 0, 0, 0, 0, 0),
+                    (1, 7, 1, 0, 0, 0, 0, 0),
+                    (1, 8, 1, 0, 0, 0, 0, 0),
+                    (1, 9, 2, 0, 0, 0, 0, 0),
+                    (1, 10, 2, 0, 0, 0, 0, 0),
+                    (1, 11, 2, 0, 0, 0, 0, 0),
+                    (1, 12, 2, 0, 0, 0, 0, 0),
+                    (1, 13, 2, 0, 0, 0, 0, 0),
+                    (1, 14, 2, 0, 0, 0, 0, 0),
+                    (1, 15, 2, 0, 0, 0, 0, 0),
+                    (1, 16, 2, 0, 0, 0, 0, 0),
+                    (1, 17, 3, 0, 0, 0, 0, 0),
+                    (1, 18, 3, 0, 0, 0, 0, 0),
+                    (1, 19, 3, 0, 0, 0, 0, 0),
+                    (1, 20, 3, 0, 0, 0, 0, 0),
+                    (1, 21, 3, 0, 0, 0, 0, 0),
+                    (1, 22, 3, 0, 0, 0, 0, 0),
+                    (1, 23, 3, 0, 0, 0, 0, 0),
+                    (1, 24, 3, 0, 0, 0, 0, 0),
+                    (1, 25, 4, 0, 0, 0, 0, 0),
+                    (1, 26, 4, 0, 0, 0, 0, 0),
+                    (1, 27, 4, 0, 0, 0, 0, 0),
+                    (1, 28, 4, 0, 0, 0, 0, 0),
+                    (1, 29, 4, 0, 0, 0, 0, 0),
+                    (1, 30, 4, 0, 0, 0, 0, 0),
+                    (1, 31, 4, 0, 0, 0, 0, 0),
+                    (1, 32, 4, 0, 0, 0, 0, 0)]
+
+
 
 #DB COMMAND
-# list_table(1)
+with conn:
+    c.executemany('INSERT INTO league_tables (season_id, team_id, division_id, points, goal_diff, wins, draws, losses) VALUES (?,?,?,?,?,?,?,?);', league_tables_teams)
+
+
+# team_ids = list(range(1,33))
+# draft_order = random.sample(team_ids, len(team_ids))
+# draft_order_copy = draft_order[:]
+# snake_round = draft_order_copy.reverse()
+
+# print(draft_order)
+# print(draft_order_copy)
+
+
+# for i in range(100):
+#     insert_shooter()
+
+# for i in range(20):
+#     insert_gk()
+
+# update_shooter()
+# update_gks()
+
+# draft_players(draft_order)
+# draft_players(draft_order_copy)
+
+# for i in range(50):
+#     insert_gk()
 
 # with conn:
+#     c.execute('DELETE FROM players WHERE id > 50;')
+# list_table(1)
+
+
+
+
+# with conn:
+#     c.executemany('INSERT INTO teams (division_id, name, city, country) VALUES (?,?,?,?);', africana)
+#     c.executemany('INSERT INTO teams (division_id, name, city, country) VALUES (?,?,?,?);', americana)
+#     c.executemany('INSERT INTO teams (division_id, name, city, country) VALUES (?,?,?,?);', asiatica)
+
+
+  
+
 #     c.executemany('''INSERT INTO league_tables (season_id, team_id, points, goal_diff, wins, draws, losses) 
 #       VALUES (?,?,?,?,?,?,?);''', table_lines)
 
-with conn:
 #     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game1)
-    c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game2)
+    # c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game2)
 #     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game3)
 #     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game4)
 #     c.executemany('INSERT INTO matches (season_id, home_team_id, away_team_id) VALUES (1,?,?);', game5)
@@ -298,29 +394,26 @@ with conn:
 #     ''')
 
 
-# c.executescript("""
-#     DROP TABLE IF EXISTS seasons;
-#     DROP TABLE IF EXISTS league_tables;
-
-#     CREATE TABLE seasons(
-#     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-#     name TEXT
-# );
-#     CREATE TABLE league_tables(
-#     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-#     season_id INTEGER,
-#     team_id INTEGER,
-#     points INTEGER,
-#     goal_diff INTEGER,
-#     wins INTEGER,
-#     draws INTEGER,
-#     losses INTEGER,
-#     FOREIGN KEY (season_id)
-#          REFERENCES seasons (id),
-#     FOREIGN KEY (team_id)
-#          REFERENCES teams (id)
-#     )
-# """)
+c.executescript("""
+    DROP TABLE IF EXISTS league_tables;
+    CREATE TABLE league_tables(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+    season_id INTEGER,
+    team_id INTEGER,
+    division_id INTEGER,
+    points INTEGER,
+    goal_diff INTEGER,
+    wins INTEGER,
+    draws INTEGER,
+    losses INTEGER,
+    FOREIGN KEY (season_id)
+         REFERENCES seasons (id),
+    FOREIGN KEY (team_id)
+         REFERENCES teams (id)
+    FOREIGN KEY (division_id)
+         REFERENCES divisions (id)
+    )
+""")
 
 c.close()
 
@@ -349,10 +442,7 @@ c.close()
 #         REFERENCES players (id)
 # )""")
 
-# for i in range(50):
-#     insert_shooter()
-# # with conn:
-#     c.execute('DELETE FROM players WHERE id > 50;')
+
 
 
 

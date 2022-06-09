@@ -192,6 +192,9 @@ def penalty(gk, shooter):
                 prob_goal -= 5
                 prob_miss += 5
     if chosen_style[0] == 'precisionstrike':
+        if shooter.power < gk.diving:
+            prob_goal -= 2
+            prob_save += 2
         if shooter.precision < gk.diving:
             prob_goal -= 2
             prob_save += 2
@@ -407,7 +410,8 @@ def match_list(matches):
         match(m)
 
     
-match_list(schedule)
+# match_list(schedule)
+match(74)
 
 
 
