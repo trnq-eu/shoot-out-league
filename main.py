@@ -67,36 +67,36 @@ def match(match_id):
     tm1_sht4 = initiate_shooter(team1_shooters[3][0])
     tm1_sht5 = initiate_shooter(team1_shooters[4][0])
     time.sleep(1)
-    # print('Formations:\n')
-    # time.sleep(1)
-    # print(f'{team1.name}:\n')
-    # time.sleep(1)
-    # print(f'Goalkeeper: {tm1_gk.first} {tm1_gk.last} {tm1_gk.overall}')
-    # time.sleep(1)
-    # print(f'First shooter: {tm1_sht1.first} {tm1_sht1.last} {tm1_sht1.overall}')
-    # time.sleep(1)
-    # print(f'Second shooter: {tm1_sht2.first} {tm1_sht2.last} {tm1_sht2.overall}')
-    # time.sleep(1)
-    # print(f'Third shooter: {tm1_sht3.first} {tm1_sht3.last} {tm1_sht3.overall}')
-    # time.sleep(1)
-    # print(f'Fourth shooter: {tm1_sht4.first} {tm1_sht4.last} {tm1_sht4.overall}')
-    # time.sleep(1)
-    # print(f'Fifth shooter: {tm1_sht5.first} {tm1_sht5.last} {tm1_sht5.overall}\n')
-    # time.sleep(2)
-    # print(f'{team2.name}:\n')
-    # time.sleep(1)
-    # print(f'Goalkeeper: {tm2_gk.first} {tm2_gk.last} {tm2_gk.overall}')
-    # time.sleep(1)
-    # print(f'First shooter: {tm2_sht1.first} {tm2_sht1.last} {tm2_sht1.overall}')
-    # time.sleep(1)
-    # print(f'Second shooter: {tm2_sht2.first} {tm2_sht2.last} {tm2_sht2.overall}')
-    # time.sleep(1)
-    # print(f'Third shooter: {tm2_sht3.first} {tm2_sht3.last} {tm2_sht3.overall}')
-    # time.sleep(1)
-    # print(f'Fourth shooter: {tm2_sht4.first} {tm2_sht4.last} {tm2_sht4.overall}')
-    # time.sleep(1)
-    # print(f'Fifth shooter: {tm2_sht5.first} {tm2_sht5.last} {tm2_sht5.overall}\n')
-    # time.sleep(3)
+    print('Formations:\n')
+    time.sleep(1)
+    print(f'{team1.name}:\n')
+    time.sleep(1)
+    print(f'Goalkeeper: {tm1_gk.first} {tm1_gk.last} {tm1_gk.overall}')
+    time.sleep(1)
+    print(f'First shooter: {tm1_sht1.first} {tm1_sht1.last} {tm1_sht1.overall}')
+    time.sleep(1)
+    print(f'Second shooter: {tm1_sht2.first} {tm1_sht2.last} {tm1_sht2.overall}')
+    time.sleep(1)
+    print(f'Third shooter: {tm1_sht3.first} {tm1_sht3.last} {tm1_sht3.overall}')
+    time.sleep(1)
+    print(f'Fourth shooter: {tm1_sht4.first} {tm1_sht4.last} {tm1_sht4.overall}')
+    time.sleep(1)
+    print(f'Fifth shooter: {tm1_sht5.first} {tm1_sht5.last} {tm1_sht5.overall}\n')
+    time.sleep(2)
+    print(f'{team2.name}:\n')
+    time.sleep(1)
+    print(f'Goalkeeper: {tm2_gk.first} {tm2_gk.last} {tm2_gk.overall}')
+    time.sleep(1)
+    print(f'First shooter: {tm2_sht1.first} {tm2_sht1.last} {tm2_sht1.overall}')
+    time.sleep(1)
+    print(f'Second shooter: {tm2_sht2.first} {tm2_sht2.last} {tm2_sht2.overall}')
+    time.sleep(1)
+    print(f'Third shooter: {tm2_sht3.first} {tm2_sht3.last} {tm2_sht3.overall}')
+    time.sleep(1)
+    print(f'Fourth shooter: {tm2_sht4.first} {tm2_sht4.last} {tm2_sht4.overall}')
+    time.sleep(1)
+    print(f'Fifth shooter: {tm2_sht5.first} {tm2_sht5.last} {tm2_sht5.overall}\n')
+    time.sleep(3)
     print('1st ROUND')
     outcome = penalty(tm1_gk,tm2_sht1)
     update = update_result(outcome)
@@ -155,7 +155,7 @@ def match(match_id):
     t1_result = int(team1.partial)
     t2_result = int(team2.partial)
 
-    update_team_stats(team1_id, team2_id, t1_result, t2_result, season_id)
+    update_team_stats(team1_id, team2_id, t1_result, t2_result, season_id, match_id)
 
     print(f'Final result: {team1.name}: {team1.partial} - {team2.name}: {team2.partial}')
 
@@ -181,16 +181,30 @@ def penalty(gk, shooter):
     chosen_style = random.choices(penalty_style, weights=(65,30,5), k=1)
     print(f'{shooter.first} {shooter.last} ({shooter.team}) decides to {chosen_style[0]} {shooter_decision[0]} while {gk.first} {gk.last} ({gk.team}) decides to {gk_decision[0]}')
     if chosen_style[0] == 'powerstrike':
+        if shooter.power > gk.diving:
+            power_delta = shooter.power - gk.diving
+            if power_delta > 5:
+                prob_goal += 2
+                prob_save -= 2
         if shooter.power > shooter.precision:
             power_delta = shooter.power - shooter.precision
+            if power_delta > 8:
+                prob_goal -= 5
+                prob_miss += 5
             if power_delta > 5:
                 prob_goal -= 3
                 prob_miss += 3
-        elif gk.diving > shooter.power:
+        if gk.diving > shooter.power:
             power_delta = gk.diving - shooter.power
-            if power_delta > 5:
+            if power_delta > 10:
+                prob_goal -= 8
+                prob_save += 8
+            elif power_delta > 5:
                 prob_goal -= 5
-                prob_miss += 5
+                prob_save += 5
+            elif power_delta > 2:
+                prob_goal -= 2
+                prob_save += 2
     if chosen_style[0] == 'precisionstrike':
         if shooter.power < gk.diving:
             prob_goal -= 2
@@ -221,11 +235,11 @@ def penalty(gk, shooter):
                 prob_goal -= 3
                 prob_save += 3
             elif quality_diff > 10:
-                prob_goal -= 8
-                prob_save += 8
+                prob_goal -= 10
+                prob_save += 10
             else:
-                prob_goal -= 5
-                prob_save += 5
+                prob_goal -= 7
+                prob_save += 7
         else:
             prob_goal += 2
             prob_save -= 2
@@ -333,9 +347,18 @@ def print_partial(outcome, team1, team2):
         print(f'{outcome.title()}!')
         print(f'{team1.name}: {team1.partial} - {team2.name}: {team2.partial}\r\n')
 
-def update_team_stats(t1, t2, t1_result,t2_result, season_id):
-    #updates team stats and league table based on the final result
+def update_team_stats(t1, t2, t1_result,t2_result, season_id, match_id):
+    #updates team stats, matches and league table based on the final result
     #receives 2 team ids, 2 results and the season_id, returns points on the table and team_stats
+    c.execute('SELECT games_played FROM league_tables WHERE team_id = ? AND season_id = ?', (t1,season_id,))
+    t1_GP = c.fetchone()[0]
+    t1_GP += 1
+    c.execute('UPDATE league_tables SET games_played = ? WHERE team_id = ? AND season_id = ?', (t1_GP,t1,season_id,))
+    c.execute('SELECT games_played FROM league_tables WHERE team_id = ? AND season_id = ?', (t2,season_id,))
+    t2_GP = c.fetchone()[0]
+    t2_GP += 1
+    c.execute('UPDATE league_tables SET games_played = ? WHERE team_id = ? AND season_id = ?', (t2_GP,t2,season_id,))
+    c.execute('UPDATE matches SET home_team_result = ?, away_team_result = ? WHERE id = ?', (t1_result, t2_result, match_id))
     c.execute('SELECT points FROM league_tables WHERE season_id = ? AND team_id = ?', (season_id, t1,))
     t1_points = c.fetchone()[0]
     c.execute('SELECT wins FROM league_tables WHERE season_id = ? AND team_id = ?', (season_id, t1,))
@@ -368,6 +391,15 @@ def update_team_stats(t1, t2, t1_result,t2_result, season_id):
         c.execute('UPDATE league_tables SET wins = ? WHERE season_id = ? AND team_id = ?', (t2_wins + 1, season_id, t2,))
         c.execute('UPDATE league_tables SET losses = ? WHERE season_id = ? AND team_id = ?', (t1_losses + 1, season_id, t1,))
     conn.commit()
+    c.execute('SELECT points FROM league_tables WHERE season_id = ? AND team_id = ?', (season_id, t1,))
+    t1_upd_pnts = c.fetchone()[0]
+    c.execute('SELECT points FROM league_tables WHERE season_id = ? AND team_id = ?', (season_id, t2,))
+    t2_upd_pnts = c.fetchone()[0]
+    t1_ppg = t1_upd_pnts / t1_GP
+    t2_ppg = t2_upd_pnts / t2_GP
+    with conn:
+         c.execute('UPDATE league_tables SET PPG = ? WHERE season_id = ? AND team_id = ?', (t1_ppg, season_id, t1,))
+         c.execute('UPDATE league_tables SET PPG = ? WHERE season_id = ? AND team_id = ?', (t2_ppg, season_id, t2,))
 
 
 
@@ -398,7 +430,7 @@ def update_player_stats(outcome, gk, shooter):
 
 
 with conn:
-    c.execute('SELECT id FROM matches WHERE season_id = ?', (1,))
+    c.execute('SELECT id FROM matches WHERE season_id = ? and week = ?', (1,14))
     matches = c.fetchall()
     
 schedule = []
@@ -409,10 +441,6 @@ def match_list(matches):
     for m in matches:
         match(m)
 
-    
-# match_list(schedule)
-match(74)
-
-
+match_list(schedule)
 
 c.close()

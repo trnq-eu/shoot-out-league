@@ -200,9 +200,41 @@ def list_roster(team_id):
         c.execute(team_roster)
         return df
 
+def print_week_results(season_id, week_id):
+    print('\nWeek ' + str(week_id) + ' results:\n')
+    c.execute('''SELECT home_team_id, away_team_id, home_team_result, away_team_result FROM matches WHERE season_id = ? and week = ?''', (season_id, week_id))
+    results = c.fetchall()
+    for result in results:
+        t1_id = result[0]
+        t2_id = result[1]
+        t1_result = result[2]
+        t2_result = result[3]
+        c.execute('''SELECT name FROM teams WHERE id = ? ''', (t1_id,))
+        t1_name = c.fetchone()[0]
+        c.execute('''SELECT name FROM teams WHERE id = ? ''', (t2_id,))
+        t2_name = c.fetchone()[0]
+        print(str(t1_name) + ' - ' + str(t2_name) + ' : ' + str(t1_result) + ' -  ' + str(t2_result))
+    
 def list_table(season_id):
-    select_table = '''SELECT teams.name, league_tables.points AS points, league_tables.wins AS wins, league_tables.draws AS draws, league_tables.losses AS losses
-    FROM teams INNER JOIN league_tables ON teams.id = league_tables.team_id WHERE season_id = '%s' ORDER BY league_tables.points DESC''' % season_id
+    select_table = '''SELECT teams.name, teams.division_id AS division, league_tables.points AS points, league_tables.wins AS wins, league_tables.draws AS draws, league_tables.losses AS losses, league_tables.PPG
+    FROM teams INNER JOIN league_tables ON teams.id = league_tables.team_id WHERE season_id = '%s' ORDER BY league_tables.PPG DESC''' % season_id
+    df = pd.read_sql(select_table, engine)
+    with conn:
+        c.execute(select_table)
+        print(df)
+
+def list_table_div(season, division):
+    c.execute('''SELECT teams.name, league_tables.points AS points, league_tables.wins AS wins, league_tables.draws AS draws, league_tables.losses AS losses, league_tables.PPG
+    FROM teams INNER JOIN league_tables ON teams.id = league_tables.team_id WHERE league_tables.season_id = ? and league_tables.division_id = ? ORDER BY league_tables.PPG DESC''', (season, division))
+    table = c.fetchall()
+    print('DIVISION ' + str(division) + ":")
+    for team in table:
+        print('{0} {1:.3f}'.format(team[0], team[5]))
+    
+
+def list_scorers():
+    select_table = '''SELECT players.first, players.last, player_stats.scored
+    FROM players INNER JOIN player_stats ON players.id = player_stats.player_id ORDER BY player_stats.scored DESC LIMIT 10'''
     df = pd.read_sql(select_table, engine)
     with conn:
         c.execute(select_table)
@@ -314,8 +346,18 @@ league_tables_teams = [(1, 1, 1, 0, 0, 0, 0, 0),
 
 
 #DB COMMAND
-with conn:
-    c.executemany('INSERT INTO league_tables (season_id, team_id, division_id, points, goal_diff, wins, draws, losses) VALUES (?,?,?,?,?,?,?,?);', league_tables_teams)
+# print_week_results(1,13)
+# list_table(1)
+
+list_table_div(1, 1)
+list_table_div(1, 2)
+list_table_div(1, 3)
+list_table_div(1, 4)
+
+
+
+# with conn:
+#     c.executemany('INSERT INTO league_tables (season_id, team_id, division_id, points, goal_diff, wins, draws, losses) VALUES (?,?,?,?,?,?,?,?);', league_tables_teams)
 
 
 # team_ids = list(range(1,33))
@@ -394,26 +436,26 @@ with conn:
 #     ''')
 
 
-c.executescript("""
-    DROP TABLE IF EXISTS league_tables;
-    CREATE TABLE league_tables(
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-    season_id INTEGER,
-    team_id INTEGER,
-    division_id INTEGER,
-    points INTEGER,
-    goal_diff INTEGER,
-    wins INTEGER,
-    draws INTEGER,
-    losses INTEGER,
-    FOREIGN KEY (season_id)
-         REFERENCES seasons (id),
-    FOREIGN KEY (team_id)
-         REFERENCES teams (id)
-    FOREIGN KEY (division_id)
-         REFERENCES divisions (id)
-    )
-""")
+# c.executescript("""
+#     DROP TABLE IF EXISTS league_tables;
+#     CREATE TABLE league_tables(
+#     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+#     season_id INTEGER,
+#     team_id INTEGER,
+#     division_id INTEGER,
+#     points INTEGER,
+#     goal_diff INTEGER,
+#     wins INTEGER,
+#     draws INTEGER,
+#     losses INTEGER,
+#     FOREIGN KEY (season_id)
+#          REFERENCES seasons (id),
+#     FOREIGN KEY (team_id)
+#          REFERENCES teams (id)
+#     FOREIGN KEY (division_id)
+#          REFERENCES divisions (id)
+#     )
+# """)
 
 c.close()
 
